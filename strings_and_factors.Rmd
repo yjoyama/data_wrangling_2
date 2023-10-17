@@ -146,9 +146,46 @@ data_marj |>
     theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
+## NYC Restaurant Inspections
 
 
+```{r}
+data("rest_inspec")
 
+rest_inspec |> 
+  group_by(boro, grade) |> 
+  summarize(n = n()) |> 
+  pivot_wider(names_from = grade, values_from = n) |> 
+  knitr::kable()
+```
+
+```{r}
+rest_inspec =
+  rest_inspec |>
+  filter(grade %in% c("A", "B", "C"), boro != "Missing") |> 
+  mutate(boro = str_to_title(boro))
+```
+
+Pizza places
+
+```{r}
+rest_inspec |> 
+  filter(str_detect(dba, "Pizza")) |> 
+  group_by(boro, grade) |> 
+  summarize(n = n()) |> 
+  pivot_wider(names_from = grade, values_from = n)
+```
+
+```{r}
+rest_inspec |> 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) |>
+  mutate(
+    boro = fct_infreq(boro),
+    boro = str_replace(boro, "Manhattan", "The city")
+    ) |> 
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() 
+```
 
 
 
